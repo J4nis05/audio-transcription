@@ -22,16 +22,18 @@ Fork of [machinelearningZH/audio-transcription](https://github.com/machinelearni
 <details>
 <summary>Contents</summary>
 
-- [Setup Instructions](#setup-instructions)
-    - [Hardware requirements](#hardware-requirements)
-    - [Installation](#installation)
-    - [Running the Application](#running-the-application)
-    - [Configuration](#configuration)
-- [Project Information](#project-information)
-    - [What does the application do?](#what-does-the-application-do)
-- [Project team](#project-team)
-- [Feedback and Contributions](#feedback-and-contributions)
-- [Disclaimer](#disclaimer)
+* [01 - Setup](#01---setup)
+    * [01.01 - Hardware Requirements](#0101---hardware-requirements)
+    * [01.02 - Hugging Face Access Token](#0102---hugging-face-access-token)
+    * [01.03 - (Optional) Creating the SSL Certificate](#0103---optional-creating-the-ssl-certificate)
+    * [01.04 - Creating the `.env` Configuration](#0104---creating-the-env-configuration)
+    * [01.05 - Building the Image](#0105---building-the-image)
+    * [01.06 - Starting the Server](#0106---starting-the-server)
+* [02 - Project Information](#02---project-information)
+    * [02.01 - What does the application do?](#0201---what-does-the-application-do)
+* [03 - Project Team](#03---project-team)
+* [04 - Feedback and Contributions](#04---feedback-and-contributions)
+* [05 - Disclaimer](#05---disclaimer)
 </details>
 
 

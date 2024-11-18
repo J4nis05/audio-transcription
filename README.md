@@ -10,7 +10,7 @@ Fork of [machinelearningZH/audio-transcription](https://github.com/machinelearni
 
 
 ![GitHub License](https://img.shields.io/github/license/machinelearningzh/audio-transcription)
-[![PyPI - Python](https://img.shields.io/badge/python-v3.10+-blue.svg)](https://github.com/machinelearningZH/audio-transcription)
+[![PyPI - Python](https://img.shields.io/badge/python-v3.10+-blue.svg)](https://github.com/J4nis05/audio-transcription)
 
 
 ---

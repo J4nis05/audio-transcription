@@ -1,19 +1,25 @@
-# Audio Transcription Tool «TranscriboZH»
-**Transcribe any audio or video file. Edit and view your transcripts in a standalone HTML editor.**
+Transcribo
+===
+
+> Transcribe any audio or video file. 
+> 
+> Edit and view your transcripts in a standalone HTML editor.
+
+
+Fork of [machinelearningZH/audio-transcription](https://github.com/machinelearningZH/audio-transcription).
+
 
 ![GitHub License](https://img.shields.io/github/license/machinelearningzh/audio-transcription)
 [![PyPI - Python](https://img.shields.io/badge/python-v3.10+-blue.svg)](https://github.com/machinelearningZH/audio-transcription)
-[![GitHub Stars](https://img.shields.io/github/stars/machinelearningZH/audio-transcription.svg)](https://github.com/machinelearningZH/audio-transcription/stargazers)
-[![GitHub Issues](https://img.shields.io/github/issues/machinelearningZH/audio-transcription.svg)](https://github.com/machinelearningZH/audio-transcription/issues)
-[![GitHub Issues](https://img.shields.io/github/issues-pr/machinelearningZH/audio-transcription.svg)](https://img.shields.io/github/issues-pr/machinelearningZH/audio-transcription) 
-[![Current Version](https://img.shields.io/badge/version-1.0-green.svg)](https://github.com/machinelearningZH/audio-transcription)
-<a href="https://github.com/astral-sh/ruff"><img alt="linting - Ruff" class="off-glb" loading="lazy" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"></a>
+
+
+---
 
 
 <img src="_img/ui1.PNG" alt="editor" width="1000"/>
 
-<details>
 
+<details>
 <summary>Contents</summary>
 
 - [Setup Instructions](#setup-instructions)
@@ -26,89 +32,172 @@
 - [Project team](#project-team)
 - [Feedback and Contributions](#feedback-and-contributions)
 - [Disclaimer](#disclaimer)
-
 </details>
 
-## Setup Instructions
-### Hardware requirements
-- We strongly recommend using a CUDA-compatible graphics card, as transcription on a CPU is extremely slow.
-    - https://developer.nvidia.com/cuda-gpus
-- If you are using a graphics card, you need at least 8GB VRAM. Performance is better with 16GB VRAM.
-- 8GB RAM
- 
-### Installation
-- Ensure you have a compatible NVIDIA driver and CUDA Version installed: https://pytorch.org/
-- Install ffmpeg
-    - Windows: https://phoenixnap.com/kb/ffmpeg-windows
-    - Linux (Ubuntu): `sudo apt install ffmpeg`
-- Install conda
-    - Windows:
-        - Install [Anaconda](https://docs.anaconda.com/free/anaconda/install/) or [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/).
-    - Linux (Ubuntu):
-        - `mkdir -p ~/miniconda3`
-        - `wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh`
-        - `bash ~/miniconda3/miniconda.sh -u`
-        - `rm ~/miniconda3/miniconda.sh`
-        - Close and re-open your current shell.
-- Create a new Python environment, e.g.: `conda create --name transcribo python=3.10`
-- Activate your new environment: `conda activate transcribo`
-- Clone this repo.
-- Install packages:
-    - Check the installed cuda version: `nvcc --version`
-    - Run the following command with your specific cuda version. **This example is for cuda version 11.8, edit the command for your installed version**.
-    - `conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=11.8 -c pytorch -c nvidia`
-    - `pip install -r requirements.txt`
-- Make sure, that the onnxruntime-gpu package is installed. Otherwise uninstall onnxruntime and install onnxruntime-gpu (if in doubt, just reinstall onnxruntime-gpu)
-    - `pip uninstall onnxruntime`
-    - `pip install --force-reinstall onnxruntime-gpu`
-    - `pip install --force-reinstall -v "numpy==1.26.3"`
-- Create a Huggingface access token
-    - Accept [pyannote/segmentation](https://huggingface.co/pyannote/segmentation)) user conditions
-    - Accept [pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization) user conditions
-    - Create access token at [hf.co/settings/tokens](https://hf.co/settings/tokens) with read and write permissions.
-- Create a `.env` file and add your access token. See the file `.env_example`.
+
+---
+
+
+01 - Setup
+---
+
+> This will Focus mostly on the Installation on Docker.
+> 
+> Installation for Windows or Linux Is documented in the Original Repository
+
+### 01.01 - Hardware Requirements
+
+* Nvidia **CUDA-Compatible** GPU or a powerful enough CPU
+  * [Nvidia - CUDA GPUs](https://developer.nvidia.com/cuda-gpus)
+* GPU with at least 8 GB, or the recommended **16 GB VRAM**
+* Up to date Docker Installation
+  * Docker Desktop on Windows **must use WSL 2**, otherwise it won't work
+
+
+### 01.02 - Hugging Face Access Token
+
+* Login or Create an Account: [Hugging Face - Signup](https://huggingface.co/join)
+* Accept the Conditions for These Repositories (Company Name, Website & Use Case are Required)
+  * [pyannote/segmentation](https://huggingface.co/pyannote/segmentation)
+  * [pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization)
+* Create a New Token with Write Access: [hf.co/settings/tokens](https://huggingface.co/settings/tokens/new?tokenType=write)
+  * Save this token for later use in the `.env` Configuration File
+
+
+### 01.03 - (Optional) Creating the SSL Certificate
+
+Using HTTPS Requires a Certificate and Key File in the `.pem` Format.
+More Information Can be Found in the Nicegui Documentation:
+[Nicegui - Configuration & Deployment](https://nicegui.io/documentation/section_configuration_deployment#server_hosting)
+
+This Script can be used to automatically Generate a Certificate: [ssl/certificate.sh](./ssl/certificate.sh)
+
+1. Install OpenSSL
+
+```bash
+sudo apt update && sudo apt install openssl -y
 ```
-    HF_AUTH_TOKEN = ...
+
+2. Generate the Private Key
+
+```bash
+openssl genrsa -out key.pem 2048
 ```
-- Edit all the variables of `.env_example` in your `.env` file for your specific configuration. Make sure that your `.env` file is in your `.gitignore`.
 
-### Installation with Docker
-- Install docker (on Windows use WSL2 backend)
-- Run `docker-compose up -d --build`
+3. Create a Certificate Signing Request
 
-### Running the Application
-Start the worker and frontend scripts:
-- Linux
-    - `tmux new -s transcribe_worker`
-    - `conda activate transcribo`
-    - `python worker.py`
-    - Exit tmux session with `CTRL-B` and `D`.
-    - `tmux new -s transcribe_frontend`
-    - `conda activate transcribo`
-    - `python main.py`
-    - You can restore your sessions with `tmux attach -t transcribe_worker` and `tmux attach -t transcribe_frontend`
-- Windows
-    - See `run_gui.bat`, `run_transcribo.bat` and `run_worker.bat`
-    - Make sure not to run the worker script multiple times. If more than one worker script is running, it will consume too much VRAM and significantly slow down the system.
+```bash
+openssl req -new -key key.pem -out cert.csr
+```
 
-### Configuration
-|   | Description |
-|---|---|
-| ONLINE | Boolean. If TRUE, exposes the frontend in your network. For https, you must provide a SSL cert and key file. See the [nicegui](https://nicegui.io/documentation/section_configuration_deployment) documentation for more information |
-| SSL_CERTFILE | String. The file path to the SSL cert file |
-| SSL_KEYFILE | String. The file path to the SSL key file |
-| STORAGE_SECRET | String. Secret key for cookie-based identification of users |
-| ROOT | String. path to main.py and worker.py |
-| WINDOWS | Boolean. Set TRUE if you are running this application on Windows. |
-| DEVICE | String. 'cuda' if you are using a GPU. 'cpu' otherwise. |
-| ADDITIONAL_SPEAKERS | Integer. Number of additional speakers provied in the editor |
-| BATCH_SIZE | Integer. Batch size for Whisper inference. Recommended batch size is 4 with 8GB VRAM and 32 with 16GB VRAM. |
+4. Generate the Self-Signed Certificate
+
+```bash
+openssl x509 -req -days 365 -in cert.csr -signkey key.pem -out cert.pem
+```
 
 
-## Project Information
+### 01.04 - Creating the `.env` Configuration
+
+This is an Example for a CUDA-Compatible GPU with at least 16 GB VRAM.
+
+To disable SSL, replace the paths in `SSL_CERTFILE` and `SSL_KEYFILE` with Empty Strings: `""` 
+
+With this Config the Server will be available at [`https://<server>:8080`](https://localhost:8080).
+
+```ini
+HF_AUTH_TOKEN = "hf_<YourToken>"
+ONLINE = True
+SSL_CERTFILE = "ssl/cert.pem"
+SSL_KEYFILE = "ssl/key.pem"
+ROOT = ""
+WINDOWS = False
+DEVICE = "cuda"
+ADDITIONAL_SPEAKERS = 4
+STORAGE_SECRET = "<ExampleSecret>"
+BATCH_SIZE = 16
+```
+
+**Explanation:**
+
+| Argument            | Description                                                                   |
+| ------------------- | ----------------------------------------------------------------------------- |
+| ONLINE              | `Boolean` - `True` Exposes the Frontend to the Network                        |
+| SSL_CERTFILE        | ` String` - The File Path to the SSL cert file                                |
+| SSL_KEYFILE         | ` String` - The File Path to the SSL key file                                 |
+| STORAGE_SECRET      | ` String` - Secret key for cookie-based identification of users               |
+| ROOT                | ` String` - File Path to `main.py` and `worker.py`                            |
+| WINDOWS             | `Boolean` - Set `True` if you are running this app on Windows.                |
+| DEVICE              | ` String` - `cuda` For CUDA-GPU, `cpu` For CPU.                               |
+| ADDITIONAL_SPEAKERS | `Integer` - Number of additional speakers provied in the editor               |
+| BATCH_SIZE          | `Integer` - Whisper inference Batch size. `4` w/ 8GB VRAM, `32` w/ 16GB VRAM. |
+
+
+### 01.05 - Building the Image
+
+The Original Repository Offers 2 Ways to Build the Image:
+
+* From machinelearningZH
+  * Dockerfile: [docker/mlzh.Dockerfile](./docker/mlzh.Dockerfile)
+  * Docker Compose: [docker/mlzh.docker-compose.yml](./docker/mlzh.docker-compose.yml)
+  * Start Script: [docker/mlzh.startup.sh](./docker/mlzh.startup.sh)
+* From Canton Aargau
+  * Dockerfile: [docker/aargau.Dockerfile](./docker/aargau.Dockerfile)
+  * Docker Compose: [docker/aargau.docker-compose.yml](./docker/aargau.docker-compose.yml)
+  * Start Script: [docker/aargau.startup.sh](./docker/aargau.bootup.sh)
+
+To use either of those Configurations, move the relevant Files into the Repository Root,
+and Remove the `aargau.` or `mlzh.` Prefix from the Filename.
+
+The Dockerfile and Docker Compose File are Modified Versions of the original Files from machinelearningZH.
+To build the Image, run this command in the Repository Root:
+
+```bash
+docker build -t transcribo:latest .
+```
+
+The Resulting Image will be relatively Big (~17 GB), so the Process will take between 5 - 7 Minutes.
+
+
+### 01.06 - Starting the Server
+
+To Start The Server Run either One of these Commands:
+
+**Using `Docker Compose`**
+
+```bash
+docker compose up -d
+```
+
+**Using `Docker run`**
+
+```bash
+docker run --name transcribo \
+           --detach \
+           --restart unless-stopped \
+           -p 8080:8080 \
+           -v $(pwd)/input_directory:/app/data/in \
+           -v $(pwd)/output_directory:/app/data/out \
+           -v $(pwd)/hf_cache:/root/.cache/huggingface \
+           --gpus 1 \ 
+           transcribo:latest
+```
+
+The Logs can be accessed using:
+
+```bash
+docker logs -f transcribo
+```
+
+---
+
+
+02 - Project Information
+---
+
 This application provides advanced transcription capabilities for confidential audio and video files using the state-of-the-art Whisper v3 large model (non-quantized). It offers top-tier transcription quality without licensing or usage fees, even for Swiss German.
 
-### What does the application do?
+### 02.01 - What does the application do?
 - State-of-the-Art Transcription: Powered by Whisper v3 large model, ensuring high accuracy and reliability.
 - Cost-Free: No license or usage-related costs, making it an affordable solution for everyone.
 - High Performance: Transcribe up to 15 times faster than real-time, ensuring efficient processing.
@@ -126,20 +215,44 @@ This application provides advanced transcription capabilities for confidential a
     - Speaker Naming: Assign names to identified speakers for clarity.
     - Power User Shortcuts: Keyboard shortcuts for enhanced navigation and control (start, stop, forward, backward, etc.).
 
+---
 
 
+03 - Project team
+---
 
-## Project team
 This project is a collaborative effort of these people of the cantonal administration of Zurich:
 
 - **Stephan Walder** - [Leiter Digitale Transformation, Oberstaatsanwaltschaft Kanton Zürich](https://www.zh.ch/de/direktion-der-justiz-und-des-innern/staatsanwaltschaft/Oberstaatsanwaltschaft-des-Kantons-Zuerich.html)
 - **Dominik Frefel** - [Team Data, Statistisches Amt](https://www.zh.ch/de/direktion-der-justiz-und-des-innern/statistisches-amt/data.html)
 - **Patrick Arnecke** - [Team Data, Statistisches Amt](https://www.zh.ch/de/direktion-der-justiz-und-des-innern/statistisches-amt/data.html)
-  
-## Feedback and Contributions
-Please share your feedback and let us know how you use the app in your institution. You can [write an email](mailto:datashop@statistik.zh.ch) or share your ideas by opening an issue or a pull requests.
+
+---
+
+
+04 - Feedback and Contributions
+---
+
+Please share your feedback and let us know how you use the app in your institution. 
+You can [write an email](mailto:datashop@statistik.zh.ch) or share your ideas by opening an issue or a pull requests.
 
 Please note, we use [Ruff](https://docs.astral.sh/ruff/) for linting and code formatting with default settings.
 
-## Disclaimer
-This transcription software (the Software) incorporates the open-source model Whisper Large v3 (the Model) and has been developed according to and with the intent to be used under Swiss law. Please be aware that the EU Artificial Intelligence Act (EU AI Act) may, under certain circumstances, be applicable to your use of the Software. You are solely responsible for ensuring that your use of the Software as well as of the underlying Model complies with all applicable local, national and international laws and regulations. By using this Software, you acknowledge and agree (a) that it is your responsibility to assess which laws and regulations, in particular regarding the use of AI technologies, are applicable to your intended use and to comply therewith, and (b) that you will hold us harmless from any action, claims, liability or loss in respect of your use of the Software.
+---
+
+
+05 - Disclaimer
+---
+
+This transcription software (the Software) incorporates the open-source model 
+Whisper Large v3 (the Model) and has been developed according to and with the 
+intent to be used under Swiss law. Please be aware that the 
+EU Artificial Intelligence Act (EU AI Act) may, under certain circumstances, 
+be applicable to your use of the Software. You are solely responsible for ensuring 
+that your use of the Software as well as of the underlying Model complies with 
+all applicable local, national and international laws and regulations. 
+By using this Software, you acknowledge and agree (a) that it is your 
+responsibility to assess which laws and regulations, in particular regarding 
+the use of AI technologies, are applicable to your intended use and to comply 
+therewith, and (b) that you will hold us harmless from any action, claims, 
+liability or loss in respect of your use of the Software.

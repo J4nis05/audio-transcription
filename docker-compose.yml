@@ -1,0 +1,26 @@
+name: "transcribo"
+
+services:
+  transcriber:
+    image: transcribo:latest
+    container_name: transcribo
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - input_directory:/app/data/in      # Uploaded Input Files
+      - output_directory:/app/data/out    # Processed Output Files
+      - hf_cache:/root/.cache/huggingface # Hugging Face Cache
+      # - .env:/app/.env                  # For using different Configs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: ["gpu"]
+
+volumes:
+  input_directory:
+  output_directory:
+  hf_cache:

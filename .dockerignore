@@ -1,1 +1,12 @@
-.venv
+.git/
+.venv/
+
+._img/
+docker/
+
+.env_example
+.gitignore
+docker-compose.yml
+Dockerfile
+LICENCE
+README.md
